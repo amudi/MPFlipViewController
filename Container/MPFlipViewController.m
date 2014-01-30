@@ -52,6 +52,8 @@ NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospese
 @synthesize sourceController = _sourceController;
 @synthesize destinationController = _destinationController;
 @synthesize flipMargin = _flipMargin;
+@synthesize swipeThreshold = _swipeThreshold;
+@synthesize swipeEscapeVelocity = _swipeEscapeVelocity;
 
 - (id)initWithOrientation:(MPFlipViewControllerOrientation)orientation
 {
