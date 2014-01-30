@@ -10,3 +10,9 @@ MPFlipViewController.xcodeproj/project.xcworkspace/xcuserdata/mark.xcuserdatad/W
 MPFlipViewController.xcodeproj/project.xcworkspace/xcuserdata/mark.xcuserdatad/UserInterfaceState.xcuserstate
 
 MPFlipViewController.xcodeproj/xcuserdata/mark.xcuserdatad/xcdebugger/Breakpoints.xcbkptlist
+
+MPFlipViewController.xcodeproj/xcuserdata/*.xcuserdatad/
+
+MPFlipViewController.xcodeproj/project.xcworkspace/xcshareddata/
+
+MPFlipViewController.xcodeproj/project.xcworkspace/xcuserdata/*.xcuserdatad/
