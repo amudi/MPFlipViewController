@@ -9,10 +9,6 @@
 #import "MPFlipViewController.h"
 #import	"MPFlipTransition.h"
 
-#define MARGIN	44
-#define SWIPE_THRESHOLD	125.0f
-#define SWIPE_ESCAPE_VELOCITY 650.0f
-
 // Notifications
 NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospesel.MPFlipViewControllerDidFinishAnimatingNotification";
 
@@ -55,6 +51,7 @@ NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospese
 @synthesize direction = _direction;
 @synthesize sourceController = _sourceController;
 @synthesize destinationController = _destinationController;
+@synthesize flipMargin = _flipMargin;
 
 - (id)initWithOrientation:(MPFlipViewControllerOrientation)orientation
 {
@@ -67,6 +64,9 @@ NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospese
 		_panning = NO;
 		_gestureDriven = NO;
 		_rubberbanding = NO;
+        _flipMargin = 44;
+        _swipeThreshold = 125.0f;
+        _swipeEscapeVelocity = 650.0;
     }
     return self;
 }
@@ -206,9 +206,9 @@ NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospese
 	CGFloat value = isHorizontal? tapPoint.x : tapPoint.y;
 	CGFloat dimension = isHorizontal? self.view.bounds.size.width : self.view.bounds.size.height;
 	NSLog(@"Tap to flip");
-	if (value <= MARGIN)
+	if (value <= self.flipMargin)
 		[self gotoPreviousPage];
-	else if (value >= dimension - MARGIN)
+	else if (value >= dimension - self.flipMargin)
 		[self gotoNextPage];
 }
 
@@ -244,12 +244,12 @@ NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospese
 		BOOL isHorizontal = [self orientation] == MPFlipViewControllerOrientationHorizontal;
 		CGFloat value = isHorizontal? currentPosition.x : currentPosition.y;
 		CGFloat dimension = isHorizontal? self.view.bounds.size.width : self.view.bounds.size.height;
-		if (value <= MARGIN)
+		if (value <= self.flipMargin)
 		{
 			if (![self startFlipWithDirection:MPFlipViewControllerDirectionReverse])
 				return;
 		}
-		else if (value >= dimension - MARGIN)
+		else if (value >= dimension - self.flipMargin)
 		{
 			if (![self startFlipWithDirection:MPFlipViewControllerDirectionForward])
 				return;
@@ -276,11 +276,11 @@ NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospese
 		if (fabs(velocityMinorComponent) > fabs(velocityComponent))
 			velocityComponent = 0;
 		
-		if (![self isRubberbanding] && (velocityComponent < -SWIPE_ESCAPE_VELOCITY || velocityComponent > SWIPE_ESCAPE_VELOCITY))
+		if (![self isRubberbanding] && (velocityComponent < -self.swipeEscapeVelocity || velocityComponent > self.swipeEscapeVelocity))
 		{
 			// Detected a swipe to the left
 			NSLog(@"Escape velocity reached.");
-			BOOL shouldFallBack = (velocityComponent < -SWIPE_ESCAPE_VELOCITY)? self.direction != MPFlipViewControllerDirectionForward : self.direction == MPFlipViewControllerDirectionForward;
+			BOOL shouldFallBack = (velocityComponent < -self.swipeEscapeVelocity)? self.direction != MPFlipViewControllerDirectionForward : self.direction == MPFlipViewControllerDirectionForward;
 			[self setPanning:NO];
 			
 			// finish the remaining animation, but from the last touch position
@@ -314,12 +314,12 @@ NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospese
 			if ([self isRubberbanding])
 				shouldFallBack = YES;
 			// But, if user was swiping in an appropriate direction, go ahead and honor that
-			else if (velocityComponent < -SWIPE_THRESHOLD)
+			else if (velocityComponent < -self.swipeThreshold)
 			{
 				// Detected a swipe to the left/top
 				shouldFallBack = self.direction != MPFlipViewControllerDirectionForward;
 			}
-			else if (velocityComponent > SWIPE_THRESHOLD)
+			else if (velocityComponent > self.swipeThreshold)
 			{
 				// Detected a swipe to the right/bottom
 				shouldFallBack = self.direction == MPFlipViewControllerDirectionForward;
@@ -346,7 +346,7 @@ NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospese
 		BOOL isHorizontal = [self orientation] == MPFlipViewControllerOrientationHorizontal;
 		CGFloat value = isHorizontal? tapPoint.x : tapPoint.y;
 		CGFloat dimension = isHorizontal? self.view.bounds.size.width : self.view.bounds.size.height;
-		return (value <= MARGIN || value >= dimension - MARGIN);
+		return (value <= self.flipMargin || value >= dimension - self.flipMargin);
 	}
 	
 	return YES;
