@@ -54,6 +54,7 @@ NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospese
 @synthesize flipMargin = _flipMargin;
 @synthesize swipeThreshold = _swipeThreshold;
 @synthesize swipeEscapeVelocity = _swipeEscapeVelocity;
+@synthesize shouldHandleTap = _shouldHandleTap;
 
 - (id)initWithOrientation:(MPFlipViewControllerOrientation)orientation
 {
@@ -69,6 +70,7 @@ NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospese
         _flipMargin = 44;
         _swipeThreshold = 125.0f;
         _swipeEscapeVelocity = 650.0;
+        _shouldHandleTap = YES;
     }
     return self;
 }
@@ -138,27 +140,34 @@ NSString *MPFlipViewControllerDidFinishAnimatingNotification = @"com.markpospese
 	if ([self gesturesAdded])
 		return;
 	
+    NSMutableArray *gestureRecognizer = [NSMutableArray arrayWithCapacity:4];
 	// Add our swipe gestures
 	BOOL isHorizontal = ([self orientation] == MPFlipViewControllerOrientationHorizontal);
 	UISwipeGestureRecognizer *left = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipeNext:)];
 	left.direction = isHorizontal? UISwipeGestureRecognizerDirectionLeft : UISwipeGestureRecognizerDirectionUp;
 	left.delegate = self;
 	[self.view addGestureRecognizer:left];
+    [gestureRecognizer addObject:left];
 	
 	UISwipeGestureRecognizer *right = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipePrev:)];
 	right.direction = isHorizontal? UISwipeGestureRecognizerDirectionRight : UISwipeGestureRecognizerDirectionDown;
 	right.delegate = self;
 	[self.view addGestureRecognizer:right];
-	
-	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-	tap.delegate = self;
-	[self.view addGestureRecognizer:tap];
+	[gestureRecognizer addObject:right];
+    
+    if (self.shouldHandleTap) {
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+        tap.delegate = self;
+        [self.view addGestureRecognizer:tap];
+        [gestureRecognizer addObject:tap];
+    }
 	
 	UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
 	pan.delegate = self;
 	[self.view addGestureRecognizer:pan];
+    [gestureRecognizer addObject:pan];
 	
-	self.gestureRecognizers = [NSArray arrayWithObjects:left, right, tap, pan, nil];
+	self.gestureRecognizers = [gestureRecognizer copy];
 
 	[self setGesturesAdded:YES];
 }

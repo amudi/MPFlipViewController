@@ -41,6 +41,7 @@ typedef NSInteger MPFlipViewControllerDirection; // For 'MPFlipViewControllerOri
 @property (nonatomic, assign) NSInteger flipMargin;
 @property (nonatomic, assign) CGFloat swipeThreshold;
 @property (nonatomic, assign) CGFloat swipeEscapeVelocity;
+@property (nonatomic, assign) BOOL shouldHandleTap;
 
 // designated initializer
 - (id)initWithOrientation:(MPFlipViewControllerOrientation)orientation;
